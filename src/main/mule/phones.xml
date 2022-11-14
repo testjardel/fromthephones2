@@ -95,7 +95,7 @@ output text/plain
 "TOTAL RECORDS TO BE PROCESSED: " ++ (payload.recordCount as String)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="18840b53-47db-47ef-98d3-2ff9f4604fb9" message='#["TEST2"]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="18840b53-47db-47ef-98d3-2ff9f4604fb9" message='#["TEST3"]'/>
 		<error-handler >
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="be1b77ec-e4d9-4b24-ba88-18acd1505bd7" >
 				<ee:transform doc:name="Transform Message" doc:id="1338f031-8585-4ea4-8156-afefe30f4a6f" >
