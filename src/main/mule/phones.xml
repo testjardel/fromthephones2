@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="94f96648-0436-49d4-b1df-0a9f8428d0be" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="phonesFlow" doc:id="239c8b05-b0ae-4513-807b-f4d7ee55f499" >
+		<http:listener doc:name="Listener" doc:id="a4f6e707-e9ee-4c3a-a6e5-9942671dac7f" config-ref="HTTP_Listener_config" path="/phones" allowedMethods="POST"/>
+		<file:read doc:name="Read" doc:id="3544f836-dcf1-422c-8463-2c1fcc2116e6" path="C:\Users\Devoteam\Desktop\Phones\warehouse.json"/>
+		<ee:transform doc:name="Transform Message" doc:id="a69a0a0b-9682-4dea-b1b1-b8263741705d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="40584025-acb1-415e-9d52-90765f3176f5">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload map(data, index) -> {
+	name: data.name,
+	color: data.color,
+	price: data.price,
+	quantity: data.quantity,
+	currency: data.currency
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="phonesBatch_Job" doc:id="493dedb5-fdba-4034-8c5e-7ae5c8653608" blockSize="1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="999ad5fe-a0c8-44dc-9243-13ab44d32e52" >
+					<ee:transform doc:name="Transform Message" doc:id="a6ae123b-142d-410f-a7b0-b82cad56f419" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	name: payload.name,
+	color: payload.color,
+	price: (payload.price as Number) + 25,
+	currency: payload.currency,
+	quantity: payload.quantity
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="e8c3cbe8-82ea-4c89-a158-884c282f3319" size="100">
+						<ee:transform doc:name="Transform Message" doc:id="b9b428dc-5dd2-4e37-9041-360485b812b6" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(data, index) -> {
+		name: data.name,
+		price: data.price,
+		color: data.color,
+		quantity: data.quantity,
+		currency: data.currency		
+	}
+]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<file:write doc:name="Write" doc:id="95b4794f-3adb-447f-81c6-e28374ed1a5e" path='#["C:\Users\Devoteam\Desktop\Phones\warehouse.json"]'/>
+						<logger level="INFO" doc:name="Logger" doc:id="1b87fd58-10c5-4acb-bcb7-b5b36506b91f" message='#[payload]'/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<ee:transform doc:name="Transform Message" doc:id="7443115c-8615-44a9-bb93-1ebfa8deb8ab" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{"Processed records:": payload.processedRecords}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="dd00929a-fa0e-4890-972d-6ae9b060f2c9" message='#[payload]'/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="Transform Message" doc:id="e7c1f913-1dff-4115-991a-096edc861255" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+"TOTAL RECORDS TO BE PROCESSED: " ++ (payload.recordCount as String)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="18840b53-47db-47ef-98d3-2ff9f4604fb9" message='#["TEST"]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="be1b77ec-e4d9-4b24-ba88-18acd1505bd7" >
+				<ee:transform doc:name="Transform Message" doc:id="1338f031-8585-4ea4-8156-afefe30f4a6f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Hey unfortunately your batch job failed"
+]]></ee:set-payload>
+						<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	statusCode: 400
+}]]></ee:set-attributes>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
