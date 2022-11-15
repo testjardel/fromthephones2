@@ -1,0 +1,65 @@
+Mulesoft Ambassador 
+Red Hat
+Smurf
+Vroege vogel
+
+1 B
+2 D
+3 D
+4 B
+5 B
+6 D
+7 A
+8 D
+9 C
+10 C
+11 D
+12 A
+13 C
+14 A
+15 D
+16 B
+17 B
+18 C
+19 D XXX
+20 A
+21 A
+22 C
+23 C
+24 A
+25 B
+26 D
+27 A
+28 D
+29 A XXX
+30 D 
+31 A
+32 A
+33 B XXX
+34 C
+35 A
+36 A
+37 B XXX
+38 C XXX
+39 B XXX
+40 C
+41 A
+42 B XXX
+43 C XXX
+44 C 
+45 A XXX
+46 B
+47 B
+48 B
+49 D
+50 D XXX
+51 C
+52 C
+53 C
+54 D
+55 A
+56 B
+57 A
+58 B A XXX
+59 C
+60 D A XXX

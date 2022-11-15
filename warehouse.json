@@ -1,0 +1,23 @@
+[
+  {
+    "name": "iphone12",
+    "price": 1299,
+    "color": "blue",
+    "quantity": "50",
+    "currency": "EUR"
+  },
+  {
+    "name": "iphone11pro",
+    "price": 1250,
+    "color": "Pink",
+    "quantity": "30",
+    "currency": "USD"
+  },
+  {
+    "name": "iphone12",
+    "price": 1299,
+    "color": "black",
+    "quantity": "2",
+    "currency": "EUR"
+  }
+]
